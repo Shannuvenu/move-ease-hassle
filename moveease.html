@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <mete name="viewport"content="width=device-width,initial-scale=1.0"/>
+  <tittle>Login/signup</tittle>
+  <link rel="stylesheet"href="style.css"/>
+</head>
+<body>
+  <div class="container"id="loginContainer"> 
+  <img src="logo.png"alt="move logo"class="logo"/> 
+  <h2 id="formTitle">Login</h2>
+    <input type="email"id="email"placeholder="Email" required/>
+    <input type="password"id="password"placeholder="Password"required/>
+    <button onclick="submitForm()">Submit</button>
+    <div class="toggle"onclick="toggleForm()">
+      Don't have an account? Sign up
+    </div>
+  </div>
+  <script>
+    let isLogin=true;
+    function toggleForm() {
+      isLogin=!isLogin;
+      document.getElementById("formTitle").innerText=isLogin?"Login":"Sign Up";
+      document.querySelector(".toggle").innerText=isLogin
+        ? "Don't have an account? Sign up"
+        : "Already have an account? Login";
+    }  
+    function submitForm(){
+      const email=document.getElementById("email").value;
+      const password=document.getElementById("password").value;
+      alert(`${isLogin ?"Logging in" :"Signing up"}\nEmail:${email}\nPassword:${password}`);
+      window.location.href="indexm.html";
+}
+  </script>
+</body>
+</html>
