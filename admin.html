@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Move Ease Admin - Bunny UI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('-translate-x-full');
+    }
+  </script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+
+  <!-- Top Navbar -->
+  <header class="bg-black text-white flex items-center justify-between px-6 py-4 shadow-md">
+    <div class="flex items-center space-x-3">
+      <button onclick="toggleSidebar()" class="md:hidden focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <h1 class="text-xl font-bold">Move Ease Admin</h1>
+    </div>
+    <span class="hidden md:inline">🔥 Bunny Swag UI</span>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-black text-white w-64 p-6 fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition duration-300 ease-in-out z-30">
+      <h2 class="text-2xl font-bold mb-8">Dashboard</h2>
+      <nav class="space-y-4">
+        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">🏠 Dashboard</a>
+        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">📦 Bookings</a>
+        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">✉️ Messages</a>
+        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">⚙️ Settings</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-0 md:ml-64 p-6">
+      <h2 class="text-3xl font-semibold mb-6">Welcome, Bunny Admin 🕶️</h2>
+
+      <!-- Orders Table -->
+      <div>
+        <h3 class="text-xl font-semibold mb-4">📋 Live Bookings from Firebase</h3>
+        <div class="overflow-x-auto rounded-xl">
+          <table class="min-w-full bg-white shadow-md">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="py-3 px-4 text-left">Customer</th>
+                <th class="py-3 px-4 text-left">Phone</th>
+                <th class="py-3 px-4 text-left">Pickup</th>
+                <th class="py-3 px-4 text-left">Drop</th>
+                <th class="py-3 px-4 text-left">Vehicle</th>
+                <th class="py-3 px-4 text-left">Date</th>
+                <th class="py-3 px-4 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody">
+              <tr><td colspan="7" class="text-center py-6 text-gray-400">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAe0rCGS3jHy4gMk-ZQCUC5x1MPRo67Jk",
+      authDomain: "move-ease-b8bb0.firebaseapp.com",
+      databaseURL: "https://move-ease-b8bb0-default-rtdb.firebaseio.com",
+      projectId: "move-ease-b8bb0",
+      storageBucket: "move-ease-b8bb0.appspot.com",
+      messagingSenderId: "757701229429",
+      appId: "1:757701229429:web:cbafceef9cf51d95cff13c"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const ordersRef = db.ref("bookings");
+    const ordersBody = document.getElementById("ordersBody");
+    ordersBody.innerHTML = "";
+
+    ordersRef.on("value", snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        Object.values(data).forEach(order => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td class="py-3 px-4">${order.name}</td>
+            <td class="py-3 px-4">${order.phone}</td>
+            <td class="py-3 px-4">${order.pickup}</td>
+            <td class="py-3 px-4">${order.drop}</td>
+            <td class="py-3 px-4">${order.goods}</td>
+            <td class="py-3 px-4">${order.date}</td>
+            <td class="py-3 px-4 font-semibold ${order.status === 'Pending' ? 'text-yellow-600' : 'text-green-600'}">${order.status}</td>
+          `;
+          ordersBody.appendChild(row);
+        });
+      } else {
+        ordersBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-400">No bookings found</td></tr>`;
+      }
+    });
+  </script>
+
+</body>
+</html>
