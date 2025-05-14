@@ -2,47 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="logo/png" href="logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="logo.png">
   <title>Move Ease Booking</title>
   <link rel="stylesheet" href="book.css" />
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 </head>
 <body>
-<div class="container">
+  <div class="container">
     <h2>Book Your Shifting Service</h2>
     <form id="bookingForm">
-      <label>Full Name</label>
-      <input type="text" name="name"required/>
-      <label>Phone Number</label>
-      <input type="tel" name="phone"required/>
-      <label>Pickup Address</label>
-      <textarea name="pickup"required></textarea>
-      <label>Drop Address</label>
-      <textarea name="drop"required></textarea>
-      <label>Type of Goods</label>
-      <select name="goods" required>
-        <option value="" Select Vehicle Type</option>
+      <label for="name">Full Name</label>
+      <input type="text" name="name" id="name" required />
+      <label for="phone">Phone Number</label>
+      <input type="tel" name="phone" id="phone" required />
+      <label for="pickup">Pickup Address</label>
+      <textarea name="pickup" id="pickup" required></textarea>
+      <label for="drop">Drop Address</label>
+      <textarea name="drop" id="drop" required></textarea>
+      <label for="goods">Type of Vehicle</label>
+      <select name="goods" id="goods" required>
+        <option value="">Select Vehicle Type</option>
         <option value="Tempo">Tempo</option>
         <option value="Mini Truck">Mini Truck</option>
         <option value="Truck">Truck</option>
         <option value="Two Wheeler">Two Wheeler</option>
         <option value="Other">Other</option>
       </select>
-      <input type="text" name="goods"required/>
-      <label>Shifting Date</label>
-      <input type="date" name="date"required/>
+      <label for="date">Shifting Date</label>
+      <input type="date" name="date" id="date" required />
       <button type="submit">Submit Booking</button>
     </form>
   </div>
-<script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAe0rCGS3jHy4gMk-ZQCUC5x1MPRo67Jk",
+      authDomain: "move-ease-b8bb0.firebaseapp.com",
+      databaseURL: "https://move-ease-b8bb0-default-rtdb.firebaseio.com",
+      projectId: "move-ease-b8bb0",
+      storageBucket: "move-ease-b8bb0.appspot.com",
+      messagingSenderId: "757701229429",
+      appId: "1:757701229429:web:cbafceef9cf51d95cff13c"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
     document.getElementById("bookingForm").addEventListener("submit", function (e) {
       e.preventDefault();
+
       const formData = new FormData(this);
       const bookingDetails = Object.fromEntries(formData.entries());
-      console.log(bookingDetails);
-      alert("Booking Submitted! Our team will contact you soon.");
-      this.reset();
+      bookingDetails.status = "Pending";
+
+      database.ref("bookings").push(bookingDetails)
+        .then(() => {
+          alert("Booking Submitted! Our team will contact you soon.");
+          document.getElementById("bookingForm").reset();
+        })
+        .catch((error) => {
+          alert("Error submitting booking: " + error);
+          console.error(error);
+        });
     });
   </script>
 </body>
 </html>
+
