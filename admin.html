@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Move Ease Admin - Bunny UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script>
@@ -13,11 +12,17 @@
       const sidebar = document.getElementById('sidebar');
       sidebar.classList.toggle('-translate-x-full');
     }
+    function showSection(id) {
+      const sections = ['dashboardSection', 'bookingsSection', 'messagesSection', 'settingsSection'];
+      sections.forEach(sec => document.getElementById(sec).classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function saveSettings() {
+      alert('Settings saved successfully!');
+    }
   </script>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
-
-  <!-- Top Navbar -->
   <header class="bg-black text-white flex items-center justify-between px-6 py-4 shadow-md">
     <div class="flex items-center space-x-3">
       <button onclick="toggleSidebar()" class="md:hidden focus:outline-none">
@@ -27,28 +32,61 @@
       </button>
       <h1 class="text-xl font-bold">Move Ease Admin</h1>
     </div>
-    <span class="hidden md:inline">🔥 Bunny Swag UI</span>
+    <span class="hidden md:inline">🔥Bunny Swag UI</span>
   </header>
-
-  <div class="flex">
-    <!-- Sidebar -->
+ <div class="flex">
     <aside id="sidebar" class="bg-black text-white w-64 p-6 fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition duration-300 ease-in-out z-30">
       <h2 class="text-2xl font-bold mb-8">Dashboard</h2>
       <nav class="space-y-4">
-        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">🏠 Dashboard</a>
-        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">📦 Bookings</a>
-        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">✉️ Messages</a>
-        <a href="#" class="block hover:bg-gray-800 p-3 rounded-lg">⚙️ Settings</a>
+        <a href="#" onclick="showSection('dashboardSection')" class="block hover:bg-gray-800 p-3 rounded-lg">🏠Dashboard</a>
+        <a href="#" onclick="showSection('bookingsSection')" class="block hover:bg-gray-800 p-3 rounded-lg">📦Bookings</a>
+        <a href="#" onclick="showSection('messagesSection')" class="block hover:bg-gray-800 p-3 rounded-lg">✉️Messages</a>
+        <a href="#" onclick="showSection('settingsSection')" class="block hover:bg-gray-800 p-3 rounded-lg">⚙️Settings</a>
       </nav>
     </aside>
-
-    <!-- Main Content -->
     <main class="flex-1 ml-0 md:ml-64 p-6">
-      <h2 class="text-3xl font-semibold mb-6">Welcome, Bunny Admin 🕶️</h2>
-
-      <!-- Orders Table -->
-      <div>
-        <h3 class="text-xl font-semibold mb-4">📋 Live Bookings from Firebase</h3>
+      <div id="dashboardSection">
+        <h2 class="text-3xl font-semibold mb-6">Welcome, Bunny Admin 🕶️</h2>
+        <div class="mb-6">
+          <p class="text-gray-700">Today's Date: <span id="currentDate"></span></p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h4 class="text-lg font-bold">Total Bookings</h4>
+            <p id="totalBookings" class="text-3xl mt-2 text-blue-600">0</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h4 class="text-lg font-bold">Pending Requests</h4>
+            <p id="pendingBookings" class="text-3xl mt-2 text-yellow-600">0</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h4 class="text-lg font-bold">Present Drivers</h4>
+            <p id="presentDrivers" class="text-3xl mt-2 text-green-600">0</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h4 class="text-lg font-bold">New Registrations</h4>
+            <p class="text-3xl mt-2 text-purple-600">5</p>
+          </div>
+        </div>
+        <h3 class="text-2xl font-semibold mb-4">👨‍🔧 Employee Status</h3>
+        <div class="overflow-x-auto rounded-xl">
+          <table class="min-w-full bg-white shadow-md">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="py-3 px-4 text-left">Name</th>
+                <th class="py-3 px-4 text-left">Role</th>
+                <th class="py-3 px-4 text-left">Phone</th>
+                <th class="py-3 px-4 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody id="employeeBody">
+              <tr><td colspan="4" class="text-center py-6 text-gray-400">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="bookingsSection" class="hidden">
+        <h3 class="text-2xl font-semibold mb-4">📋 Bookings List</h3>
         <div class="overflow-x-auto rounded-xl">
           <table class="min-w-full bg-white shadow-md">
             <thead class="bg-gray-200 text-gray-700">
@@ -68,10 +106,48 @@
           </table>
         </div>
       </div>
+      <div id="messagesSection" class="hidden">
+        <h3 class="text-2xl font-semibold mb-4">✉️ Messages</h3>
+        <form class="bg-white p-6 rounded-lg shadow max-w-xl">
+          <label class="block mb-4">
+            <span class="text-gray-700">Name</span>
+            <input type="text" class="mt-1 block w-full border p-2 rounded" placeholder="Customer Name"/>
+          </label>
+          <label class="block mb-4">
+            <span class="text-gray-700">Message</span>
+            <textarea class="mt-1 block w-full border p-2 rounded" rows="4" placeholder="Write something..."></textarea>
+          </label>
+          <button type="submit" class="bg-black text-white px-4 py-2 rounded">Send</button>
+        </form>
+      </div>
+      <div id="settingsSection" class="hidden">
+        <h3 class="text-2xl font-semibold mb-4">⚙️ Settings</h3>
+        <div class="bg-white p-6 rounded-lg shadow max-w-md space-y-4">
+          <div>
+            <label class="block mb-2 text-gray-700">Change Admin Name</label>
+            <input type="text" class="w-full border p-2 rounded" placeholder="Enter new name"/>
+          </div>
+          <div>
+            <label class="block mb-2 text-gray-700">Update Password</label>
+            <input type="password" class="w-full border p-2 rounded" placeholder="New password"/>
+          </div>
+          <div>
+            <label class="block mb-2 text-gray-700">Notification Email</label>
+            <input type="email" class="w-full border p-2 rounded" placeholder="admin@moveease.com"/>
+          </div>
+          <div>
+            <label class="block mb-2 text-gray-700">Theme Preference</label>
+            <select class="w-full border p-2 rounded">
+              <option>Light</option>
+              <option selected>Dark</option>
+            </select>
+          </div>
+          <button onclick="saveSettings()" class="bg-blue-600 text-white px-4 py-2 rounded">Save Changes</button>
+        </div>
+      </div>
     </main>
   </div>
-
-  <script>
+ <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAe0rCGS3jHy4gMk-ZQCUC5x1MPRo67Jk",
       authDomain: "move-ease-b8bb0.firebaseapp.com",
@@ -81,18 +157,21 @@
       messagingSenderId: "757701229429",
       appId: "1:757701229429:web:cbafceef9cf51d95cff13c"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const ordersRef = db.ref("bookings");
+    document.getElementById("currentDate").innerText = new Date().toLocaleDateString();
+    const ordersRef = firebase.database().ref("bookings");
     const ordersBody = document.getElementById("ordersBody");
-    ordersBody.innerHTML = "";
-
+    const totalBookings = document.getElementById("totalBookings");
+    const pendingBookings = document.getElementById("pendingBookings");
     ordersRef.on("value", snapshot => {
       const data = snapshot.val();
+      let total = 0;
+      let pending = 0;
+      ordersBody.innerHTML = "";
       if (data) {
         Object.values(data).forEach(order => {
+          total++;
+          if (order.status === 'Pending') pending++;
           const row = document.createElement("tr");
           row.innerHTML = `
             <td class="py-3 px-4">${order.name}</td>
@@ -108,8 +187,33 @@
       } else {
         ordersBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-400">No bookings found</td></tr>`;
       }
+      totalBookings.innerText = total;
+      pendingBookings.innerText = pending;
+    });
+    const employeesRef = firebase.database().ref("employees");
+    const employeeBody = document.getElementById("employeeBody");
+    const presentDrivers = document.getElementById("presentDrivers");
+    employeesRef.on("value", snapshot => {
+      const data = snapshot.val();
+      let present = 0;
+      employeeBody.innerHTML = "";
+      if (data) {
+        Object.values(data).forEach(emp => {
+          if (emp.status === 'Present') present++;
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td class="py-3 px-4">${emp.name}</td>
+            <td class="py-3 px-4">${emp.role}</td>
+            <td class="py-3 px-4">${emp.phone}</td>
+            <td class="py-3 px-4 font-semibold ${emp.status === 'Present' ? 'text-green-600' : 'text-red-600'}">${emp.status}</td>
+          `;
+          employeeBody.appendChild(row);
+        });
+      } else {
+        employeeBody.innerHTML=`<tr><td colspan="4" class="text-center py-6 text-gray-400">No employee data</td></tr>`;
+      }
+      presentDrivers.innerText=present;
     });
   </script>
-
 </body>
 </html>
