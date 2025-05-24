@@ -6,7 +6,6 @@
   <link rel="icon" type="image/png" href="logo.png">
   <title>Move Ease Booking</title>
   <link rel="stylesheet" href="book.css" />
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 </head>
@@ -50,11 +49,9 @@
     const database = firebase.database();
     document.getElementById("bookingForm").addEventListener("submit", function (e) {
       e.preventDefault();
-
       const formData = new FormData(this);
       const bookingDetails = Object.fromEntries(formData.entries());
       bookingDetails.status = "Pending";
-
       database.ref("bookings").push(bookingDetails)
         .then(() => {
           alert("Booking Submitted! Our team will contact you soon.");
